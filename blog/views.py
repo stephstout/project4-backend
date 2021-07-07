@@ -1,6 +1,6 @@
 from django.http import request
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import viewsets, generics
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
 from rest_framework.permissions import IsAuthenticated
@@ -19,6 +19,12 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         return serializer.save(owner=self.request.user)
+
+class PostDetailViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [IsOwnerOrReadOnly, IsAuthenticated,]
+    authentication_classes = [TokenAuthentication,]
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset =  Comment.objects.all()
